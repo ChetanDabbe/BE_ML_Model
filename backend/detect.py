@@ -2,9 +2,15 @@ from ultralytics import YOLO
 import cv2
 import numpy as np
 
+# # Load YOLO models
+# bottle_model = YOLO("F:/BE_Project/Final Year Project 2025/last-project/backend/models/yolov8n.pt")  # Pre-trained model for bottle detection
+# defect_model = YOLO("F:/BE_Project/Final Year Project 2025/last-project/backend/models/best.pt")      # Custom-trained model for defect detection
+
 # Load YOLO models
-bottle_model = YOLO("F:/BE_Project/Final Year Project 2025/last-project/backend/models/yolov8n.pt")  # Pre-trained model for bottle detection
-defect_model = YOLO("F:/BE_Project/Final Year Project 2025/last-project/backend/models/best.pt")      # Custom-trained model for defect detection
+bottle_model = YOLO("backend/models/yolov8n.pt")  # Pre-trained model for bottle detection
+defect_model = YOLO("backend/models/best.pt")      # Custom-trained model for defect detection
+
+
 
 # Class names for defect detection
 defect_class_names = ['thread-cut', 'dent', 'bubble', 'scratch', 'deform']

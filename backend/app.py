@@ -10,8 +10,8 @@ from detect import process_image
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
-# ✅ Define the directory for storing recorded videos
-VIDEO_DIR = r"F:\BE_Project\Final Year Project 2025\VIdeo_Integrated_Github\Model integrated - Copy\BE_ML_Model\backend\recorded_videos"
+# ✅ Use relative path for recorded videos (compatible with Render)
+VIDEO_DIR = os.path.join(os.path.dirname(__file__), 'recorded_videos')
 os.makedirs(VIDEO_DIR, exist_ok=True)
 
 video_writer = None
@@ -54,7 +54,6 @@ def start_recording():
     timestamp = time.strftime("%Y%m%d-%H%M%S")
     output_video_path = os.path.join(VIDEO_DIR, f"output_{timestamp}.avi")
 
-    # ✅ Define video codec and create VideoWriter
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
     video_writer = cv2.VideoWriter(output_video_path, fourcc, 10, (640, 480))
 
@@ -75,23 +74,25 @@ def stop_recording():
     is_recording = False
     return jsonify({"message": "Recording stopped", "video_path": output_video_path})
 
-# ✅ New Route to List Recorded Videos
 @app.route('/get_videos', methods=['GET'])
 def get_videos():
     try:
         video_files = [f for f in os.listdir(VIDEO_DIR) if f.endswith(".avi")]
-        video_list = [{"filename": f, "url": f"http://localhost:5000/videos/{f}"} for f in video_files]
-
+        video_list = [{"filename": f, "url": request.host_url + f"videos/{f}"} for f in video_files]
         return jsonify({"videos": video_list})
-
     except Exception as e:
         print("Error listing videos:", e)
         return jsonify({"error": str(e)}), 500
 
-# ✅ Serve Video Files
 @app.route('/videos/<filename>', methods=['GET'])
 def get_video(filename):
     return send_from_directory(VIDEO_DIR, filename)
 
+@app.route('/')
+def home():
+    return "🎉 Flask app is running successfully on Render!"
+
+# ✅ PORT fix for Render
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)

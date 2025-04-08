@@ -2,8 +2,5 @@ services:
   - type: web
     name: pet-defect-analyzer
     env: python
-    buildCommand: ""
+    buildCommand: "pip install -r requirements.txt"
     startCommand: python app.py
-    envVars:
-      - key: PORT
-        value: 5000

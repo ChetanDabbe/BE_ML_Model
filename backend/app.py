@@ -10,7 +10,6 @@ from detect import process_image
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
-# ✅ Use relative path for recorded videos (compatible with Render)
 VIDEO_DIR = os.path.join(os.path.dirname(__file__), 'recorded_videos')
 os.makedirs(VIDEO_DIR, exist_ok=True)
 
@@ -24,20 +23,17 @@ def stream():
 
     try:
         data = request.json
-        image_data = data['image'].split(",")[1]  
+        image_data = data['image'].split(",")[1]
         image_bytes = base64.b64decode(image_data)
 
-        # Convert bytes to NumPy array and then to OpenCV format
         nparr = np.frombuffer(image_bytes, np.uint8)
         frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
         if frame is None:
             raise ValueError("Decoded frame is None. Check base64 encoding.")
 
-        # Process the frame
         processed_image_base64, defects = process_image(frame)
 
-        # Save the frame to video if recording
         if is_recording and video_writer is not None:
             video_writer.write(frame)
 
@@ -92,7 +88,6 @@ def get_video(filename):
 def home():
     return "🎉 Flask app is running successfully on Render!"
 
-# ✅ PORT fix for Render
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=True, host='0.0.0.0', port=port)
